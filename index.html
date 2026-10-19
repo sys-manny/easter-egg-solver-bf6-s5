@@ -21,6 +21,7 @@ main,aside{min-width:0}@media(max-width:800px){.layout{grid-template-columns:min
 .monitor-layout{display:grid;gap:10px;margin:14px 0}.monitor-row{display:grid;grid-template-columns:repeat(var(--columns),minmax(0,1fr));gap:10px}.monitor-row .shape-title{min-height:0}.monitor-row .counts{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}.monitor-row .light-strip{max-width:160px;margin:8px auto 12px}.monitor-row .symbol{margin:8px auto}.monitor-row .count{min-height:32px}@media(max-width:500px){.monitor-layout,.monitor-row{gap:7px}.monitor-row .tower-card{padding:9px 5px}.monitor-row .counts{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .photo-directions{margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}.photo-directions h3{margin-bottom:5px}.photo-directions p{margin:0;font-size:14px;line-height:1.5}#enlarged-photo{max-height:calc(100dvh - 280px)}
 #photo-dialog{width:min(1600px,calc(100vw - 32px));max-height:calc(100dvh - 32px);overflow:auto}.photo-view-layout{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(240px,1fr);gap:20px;align-items:center}.photo-view-layout>*{min-width:0}#enlarged-photo{width:100%;height:auto;max-height:calc(100dvh - 260px);object-fit:contain}.photo-map-column{align-self:center}.photo-map-controls{justify-content:flex-end;margin-bottom:8px}.photo-map-column .solution-map{width:100%;margin:0}.photo-directions{max-width:100%}@media(max-width:649px){.photo-view-layout{grid-template-columns:minmax(0,1fr);gap:12px}.photo-map-column{width:min(100%,360px);justify-self:center}#enlarged-photo{max-height:32dvh}.photo-directions p{font-size:13px}.photo-directions{margin-top:12px}}
+.scout-route-summary{font-size:13px;color:var(--ink);margin-top:4px}.scout-route-summary span{display:block;font-size:12px;color:var(--muted);margin-top:4px}#scout-route{pointer-events:none}@media(max-width:599px){[aria-labelledby="map-title"] .section-head{flex-wrap:wrap}}
 </style>
 </head>
 <body>
@@ -29,7 +30,7 @@ main,aside{min-width:0}@media(max-width:800px){.layout{grid-template-columns:min
 <header class="site-header"><img class="header-art" src="assets/header-fireteam.webp" width="1100" height="614" alt="Tortilla fireteam wearing helmets and green night-vision goggles"><div class="header-copy"><div class="eyebrow">Battlefield 6 · Season 5</div><h1>BonelessTortilla&#39;s Area 51 Easter Egg Solver</h1><div class="muted">Record the towers. Decode the bunker. Find the UFO.</div></div></header>
 <main>
 <section class="panel pad" aria-labelledby="portal-title"><div class="section-head"><h2 id="portal-title">Portal experience code: <code>1X4AP</code></h2></div><p class="muted" style="margin-bottom:0">In Portal, search for experience code <strong>1X4AP</strong> and host it. Set a password for a private run. It starts on <strong>Vegas Strip</strong>; use the admin controls to skip to the next map, <strong>Area 51</strong>.</p></section>
-<section class="panel" aria-labelledby="map-title"><div class="pad"><div class="section-head"><h2 id="map-title">Tower locations</h2><div class="actions" role="group" aria-label="Map layer"><button class="compact" id="map-objectives" aria-pressed="true">Objectives</button><button class="compact" id="map-terrain" aria-pressed="false">Terrain</button></div></div></div><div class="map" id="map"><svg class="basemap" viewBox="0 0 960 660" role="img" aria-label="Area 51 map with eight tower crosshairs; objective labels shown" id="map-image-label"><image id="map-image" href="assets/map-objectives.webp" width="960" height="660"/></svg></div></section>
+<section class="panel" aria-labelledby="map-title"><div class="pad"><div class="section-head"><h2 id="map-title">Tower locations</h2><div class="actions" role="group" aria-label="Map layer"><button class="compact" id="toggle-scout-route" aria-pressed="true">Scouting arrows</button><button class="compact" id="map-objectives" aria-pressed="true">Objectives</button><button class="compact" id="map-terrain" aria-pressed="false">Terrain</button></div></div><div class="scout-route-summary"><strong>Scouting order:</strong> 1 → 2 → 3 → 5 → 4 → 6 → 7 → 8<span>Record colors without pressing. Arrows show waypoint order, not a walking path; a helicopter helps reach Tower 6.</span></div></div><div class="map" id="map"><svg class="basemap" viewBox="0 0 960 660" role="img" aria-label="Area 51 map with eight tower crosshairs; objective labels shown" id="map-image-label"><image id="map-image" href="assets/map-objectives.webp" width="960" height="660"/></svg></div></section>
 <section class="panel pad" aria-labelledby="colors-title"><div class="section-head"><h2 id="colors-title"><span class="step">1</span>Tower colors</h2><span class="status" id="color-count">0 / 8 recorded</span></div><p class="muted">Reveal each panel with a knife or gun. Record its current color <strong>before pressing any tower buttons.</strong></p><div class="tower-grid" id="towers"></div><div class="actions"><button class="primary" id="solve-colors">Solve tower colors</button><button id="clear-colors">Clear colors</button><span class="status">Red → Yellow → Green → Red</span></div></section>
 <section id="color-stage" class="panel pad solution-stage" aria-labelledby="color-solution-title" hidden><h2 id="color-solution-title"><span class="step">2</span>Turn all towers green</h2><div class="color-solution-layout"><div id="color-result" class="result" aria-live="polite"></div><div class="map solution-map" id="solution-map"><svg class="basemap" viewBox="0 0 960 660" role="img" aria-label="Step 2 tower locations"><image id="solution-map-image" href="assets/map-objectives.webp" width="960" height="660"/></svg></div></div></section>
 <section class="panel pad" aria-labelledby="symbols-title"><div class="section-head"><h2 id="symbols-title"><span class="step">3</span>Bunker symbol decoder</h2><span class="status" id="shape-count">0 / 8 recorded</span></div><p class="muted">After all towers are green, enter the bunker near F and activate the radio. Count the <strong>lit white lights above each small monitor</strong>. That count is its tower number.</p><div class="monitor-layout" id="shapes"></div><div class="actions"><button class="primary" id="decode">Generate final sequence</button><button id="clear-shapes">Clear light counts</button></div><p class="help">Monitor cards follow the room: left to right, front to back. The final sequence follows the large display’s symbol order. Repeated tower numbers are allowed.</p></section>
@@ -45,14 +46,14 @@ main,aside{min-width:0}@media(max-width:800px){.layout{grid-template-columns:min
 const colorNames=['Red','Yellow','Green'];
 const shapeNames=['Open circle','Open triangle','Open square','Open diamond','Filled circle','Filled triangle','Filled square','Filled diamond'];
 const towerInfo=[
- ['East of objective H. Panel at the foot of the large metal tower.',766,326],
- ['South of objective G, at the southern boundary. Look behind the large wall.',522,517],
- ['West of E, between A and E. Look in the corner behind the shrubs.',331,302],
- ['Just south of C, between C and D. Panel is tucked into a corner.',366,163],
- ['Northwest edge beyond A. The cover can be awkward to melee; try shooting it.',88,201],
- ['High on the northwest ridge above C. A helicopter is the easiest approach. Look behind the shrubbery.',315,57],
- ['Northeast of C, downhill from tower 6. Panel is behind a plant.',452,77],
- ['Northwest of I on the northeast edge. Find the panel low on the tower wall.',626,95]
+ ["East of objective H, at the utility unit beside Tower 1.",766,326],
+ ["South of objective G, at the perimeter wall beside Tower 2.",522,517],
+ ["West of E, between A and E, at Tower 3’s concrete base.",331,302],
+ ["South of C, between C and D, at Tower 4’s concrete base.",366,163],
+ ["Northwest edge beyond A, on the rocky ledge at Tower 5.",88,201],
+ ["On the high ridge northwest of C, at Tower 6.",315,57],
+ ["Northeast of C, downhill from Tower 6, at Tower 7.",452,77],
+ ["Northwest of I, on the northeastern side of the map, at Tower 8.",626,95]
 ];
 const $=id=>document.getElementById(id);
 const fresh=()=>({colors:Array(8).fill(null),counts:Array(8).fill(null),selected:0,mapMode:'objectives',colorPlan:null,colorDone:0,finalPlan:null,finalDone:0});
@@ -82,9 +83,9 @@ function solveColors(colors){if(!validArray(colors,8,v=>Number.isInteger(v)&&v>=
 function symbol(i){const fill=i<4?'none':'currentColor',s=i%4;return `<svg class="symbol" viewBox="0 0 40 40" aria-hidden="true" fill="${fill}" stroke="currentColor" stroke-width="2.5">${s===0?'<circle cx="20" cy="20" r="14"/>':s===1?'<path d="M20 5L36 34H4Z"/>':s===2?'<rect x="7" y="7" width="26" height="26"/>':'<path d="M20 3L37 20L20 37L3 20Z"/>'}</svg>`}
 function photoButton(i,context=''){const b=document.createElement('button');b.className='photo-link';b.setAttribute('aria-label',context+'Enlarge tower '+(i+1)+' first-person photo');b.setAttribute('aria-haspopup','dialog');b.innerHTML=`<img class="reference-photo" src="assets/tower${String(i+1).padStart(2,'0')}.webp" width="1000" height="600" alt="Tower ${i+1} button and nearby landmarks"><span class="help">Click to enlarge</span>`;b.onclick=()=>openPhoto(i);return b}
 function renderTowers(){const container=$('towers');container.replaceChildren();state.colors.forEach((v,i)=>{const card=document.createElement('div');card.className='tower-card'+(state.selected===i?' selected':'');const title=document.createElement('button');title.className='tower-title';title.textContent='Tower '+(i+1);title.onclick=()=>selectTower(i);card.dataset.tower=i+1;card.title=towerInfo[i][0];card.append(title,photoButton(i));const choices=document.createElement('div');choices.className='colors';colorNames.forEach((name,c)=>{const b=document.createElement('button');b.className='color-choice';b.setAttribute('aria-label',`Tower ${i+1}: ${name}`);b.setAttribute('aria-pressed',v===c);b.innerHTML=`<span class="dot ${name.toLowerCase()}"></span>${name}`;b.onclick=()=>{state.colors[i]=state.colors[i]===c?null:c;state.colorPlan=null;state.colorDone=0;renderTowers();renderColorResult();save()};choices.append(b)});card.append(choices);container.append(card)});$('color-count').textContent=state.colors.filter(v=>v!==null).length+' / 8 recorded'}
-// Fixed 3/4/5/6-light layouts transcribed from the supplied monitor close-ups.
+// The 2-light layout is user-reported; 3/4/5/6 match supplied close-ups.
 // Other counts are count-only previews, not claimed in-game position matches.
-function monitorLights(count){const references={3:[1,4,6],4:[2,4,5,7],5:[0,3,5,6,7],6:[0,1,4,5,6,7]};const fallback=[4,5,6,7,0,1,2,3];return new Set(references[count]||fallback.slice(0,count||0))}
+function monitorLights(count){const references={2:[1,6],3:[1,4,6],4:[2,4,5,7],5:[0,3,5,6,7],6:[0,1,4,5,6,7]};const fallback=[4,5,6,7,0,1,2,3];return new Set(references[count]||fallback.slice(0,count||0))}
 function renderShapes(){
  const container=$('shapes');container.replaceChildren();
  // Count storage stays indexed by the large display's fixed symbol order.
@@ -100,23 +101,36 @@ function renderShapes(){
   });container.append(row);
  });$('shape-count').textContent=state.counts.filter(v=>v!==null).length+' / 8 recorded'
 }
-function renderMap(){syncMapLayer();$('map').querySelectorAll('.marker').forEach(n=>n.remove());towerInfo.forEach((t,i)=>{const b=document.createElement('button');b.className='marker';b.style.left=(t[1]/960*100)+'%';b.style.top=(t[2]/660*100)+'%';b.setAttribute('aria-label','Show tower '+(i+1)+' location');b.setAttribute('aria-pressed',state.selected===i);b.innerHTML=`<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="11" fill="none" stroke="currentColor" stroke-width="2"/><path d="M24 2V18M24 30V46M2 24H18M30 24H46" stroke="currentColor" stroke-width="2"/></svg><span class="number">${i+1}</span>`;b.onclick=()=>selectTower(i,true);$('map').append(b)})}
+const scoutingOrder=[1,2,3,5,4,6,7,8];
+let showScoutingRoute=true;
+function renderScoutingRoute(){
+ const svg=$('map').querySelector('svg.basemap');$('scout-route')?.remove();
+ if(!svg.querySelector('#scout-arrow-defs'))svg.insertAdjacentHTML('beforeend','<defs id="scout-arrow-defs"><marker id="scout-arrow" markerWidth="20" markerHeight="20" refX="15" refY="8" orient="auto" markerUnits="userSpaceOnUse" viewBox="0 0 16 16"><path d="M1 1L15 8L1 15L5 8Z" fill="#71dcff" stroke="#10242c" stroke-width="1"/></marker></defs>');
+ const g=document.createElementNS('http://www.w3.org/2000/svg','g');g.id='scout-route';g.setAttribute('aria-hidden','true');g.style.display=showScoutingRoute?'':'none';
+ for(let k=0;k<scoutingOrder.length-1;k++){
+  const a=towerInfo[scoutingOrder[k]-1],b=towerInfo[scoutingOrder[k+1]-1],dx=b[1]-a[1],dy=b[2]-a[2],distance=Math.hypot(dx,dy),ux=dx/distance,uy=dy/distance;
+  const d='M'+(a[1]+ux*36).toFixed(1)+' '+(a[2]+uy*36).toFixed(1)+'L'+(b[1]-ux*42).toFixed(1)+' '+(b[2]-uy*42).toFixed(1);
+  g.insertAdjacentHTML('beforeend',`<path d="${d}" fill="none" stroke="#071b26" stroke-width="7" stroke-opacity=".9"/><path class="scout-leg" data-from="${scoutingOrder[k]}" data-to="${scoutingOrder[k+1]}" d="${d}" fill="none" stroke="#71dcff" stroke-width="3.5" stroke-dasharray="10 8" marker-end="url(#scout-arrow)"/>`);
+ }svg.append(g);$('toggle-scout-route').setAttribute('aria-pressed',showScoutingRoute)
+}
+$('toggle-scout-route').onclick=()=>{showScoutingRoute=!showScoutingRoute;renderScoutingRoute()};
+function renderMap(){renderScoutingRoute();syncMapLayer();$('map').querySelectorAll('.marker').forEach(n=>n.remove());towerInfo.forEach((t,i)=>{const b=document.createElement('button');b.className='marker';b.style.left=(t[1]/960*100)+'%';b.style.top=(t[2]/660*100)+'%';b.setAttribute('aria-label','Show tower '+(i+1)+' location');b.setAttribute('aria-pressed',state.selected===i);b.innerHTML=`<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="11" fill="none" stroke="currentColor" stroke-width="2"/><path d="M24 2V18M24 30V46M2 24H18M30 24H46" stroke="currentColor" stroke-width="2"/></svg><span class="number">${i+1}</span>`;b.onclick=()=>selectTower(i,true);$('map').append(b)})}
 function syncMapLayer(){const objectives=state.mapMode==='objectives';const src=objectives?'assets/map-objectives.webp':'assets/map-blank.webp';$('map-image').setAttribute('href',src);$('solution-map-image').setAttribute('href',src);$('final-map-image').setAttribute('href',src);$('photo-map-image').setAttribute('href',src);$('map-image-label').setAttribute('aria-label','Area 51 map with eight tower crosshairs; '+(objectives?'objective labels shown':'terrain without objective labels'));$('map-objectives').setAttribute('aria-pressed',objectives);$('map-terrain').setAttribute('aria-pressed',!objectives);$('photo-map-objectives').setAttribute('aria-pressed',objectives);$('photo-map-terrain').setAttribute('aria-pressed',!objectives)}
 $('map-objectives').onclick=()=>{state.mapMode='objectives';syncMapLayer();save()};
 $('map-terrain').onclick=()=>{state.mapMode='terrain';syncMapLayer();save()};
 $('photo-map-objectives').onclick=$('map-objectives').onclick;$('photo-map-terrain').onclick=$('map-terrain').onclick;
 function selectTower(i,fromMap=false){state.selected=i;renderTowers();renderMap();save();if(fromMap){const card=$('towers').children[i];card.scrollIntoView({behavior:'smooth',block:'nearest'});card.querySelector('.tower-title').focus({preventScroll:true})}}
-// Panel landmarks visible in the supplied first-person screenshots; compass
-// faces are deliberately omitted until confirmed in game.
+// Panel approaches checked against the user’s silent tower walkthrough.
+// Directions use numbered faces and visible landmarks rather than assumed compass sides.
 const buttonLandmarks=[
- 'Look low on the side of the large metal utility unit beside the tower. The panel is mounted on a short upright post.',
- 'Look on the concrete boundary wall beneath the chain-link fence, beside a vertical wall joint. The panel is on a narrow upright post.',
- 'At the concrete tower base, check near the corner behind the shrubs. The panel is attached to a vertical post against the wall.',
- 'At the concrete tower base, look beside the wall corner among the branches. The panel sits low on the shaded concrete face.',
- 'At the concrete tower base beside the orange rocks, look through the thin branches for the panel on its upright post.',
- 'At the elevated tower, look against the low concrete base beneath the steel tower legs. Branches partly conceal the panel.',
- 'At the concrete tower base, look beside the edge of the wall where the climbing branches cross it. The panel is low against the wall.',
- 'At the concrete tower base, look on the wall beside the dense bush. The panel is mounted low on a thin upright post.'
+ "At ground level between the lattice tower and the arched hangar, find the tall, rust-streaked metal utility unit beside the concrete plinth. The button is low on the unit’s side, near its corner, on a thin upright post. It is not on the steel tower legs.",
+ "Find the concrete face marked 02, then check the separate perimeter wall beside the tower. The button is on the outer face of that low wall, beside a vertical joint beneath the chain-link fence—not on the concrete face marked 02. The wall may be damaged during the match.",
+ "Find 03 painted on the concrete base, then round the corner onto the adjacent unnumbered wall with shrubs against it. The button is near that corner, hidden behind the branches on an upright post against the concrete.",
+ "From the face marked 04, follow the outside of the concrete base around the rocky side. Enter the narrow, shrub-filled gap beside the wall. The button is low on the shaded concrete face near the corner, screened by branches.",
+ "Reach the rocky ledge outside the concrete base marked 05. Round the corner toward the rock outcrop and bush pressed against the base. Look through that bush for the button low against the concrete. Shoot or melee the cover if the foliage makes it awkward to reach.",
+ "A helicopter makes the high ridge easiest to reach. Land beside the base marked 06 and move around the outside of its low concrete wall. Beneath the steel tower braces, a shrub conceals the button on an upright post against the wall.",
+ "From the base marked 07, follow the narrow rock ledge around the concrete, between the wall and the rocky hillside. Round the corner into the bush against the outer wall. The button is low on that wall behind the branches.",
+ "Find 08 painted on the base, then round the corner toward the overhead pipe racks. Push through the bush immediately beside the concrete wall. The button is low on that wall, just around the corner from the numbered face."
 ];
 function openPhoto(i){$('photo-dialog-title').textContent='Tower '+(i+1);$('photo-button-location').textContent=towerInfo[i][0]+' '+buttonLandmarks[i];$('enlarged-photo').src='assets/tower'+String(i+1).padStart(2,'0')+'.webp';$('enlarged-photo').alt='Tower '+(i+1)+' button and nearby landmarks';renderSequenceMap('photo-map',[i+1],0,'photo');if(!$('photo-dialog').open)$('photo-dialog').showModal();syncSolutionMapScale()}
 $('photo-dialog').onclick=e=>{const dialog=$('photo-dialog');if(e.target!==dialog)return;const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dialog.close()};
