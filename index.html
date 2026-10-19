@@ -19,6 +19,7 @@ main,aside{min-width:0}@media(max-width:800px){.layout{grid-template-columns:min
 .sources a{display:inline-flex;align-items:center;gap:10px;max-width:100%;text-decoration:none}.sources a span{text-decoration:underline;text-underline-offset:2px}.credit-logo{display:block;width:36px;height:36px;object-fit:contain;flex-shrink:0;border-radius:4px;background:#fff}.sources ul{align-items:center;gap:16px 28px}.marker,.marker:hover,.marker[aria-pressed=true],.solution-map .marker,.solution-map .next-tower{color:#fff}.solution-map .next-tower{filter:drop-shadow(0 1px 2px #000)}
 .marker[aria-pressed=true],.solution-map .next-tower{color:#ff62df;filter:drop-shadow(0 1px 2px #000)}.marker[aria-pressed=true] .number,.solution-map .next-tower .number{background:#ff62df;color:#231120;outline:1px solid #231120}
 .monitor-layout{display:grid;gap:10px;margin:14px 0}.monitor-row{display:grid;grid-template-columns:repeat(var(--columns),minmax(0,1fr));gap:10px}.monitor-row .shape-title{min-height:0}.monitor-row .counts{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}.monitor-row .light-strip{max-width:160px;margin:8px auto 12px}.monitor-row .symbol{margin:8px auto}.monitor-row .count{min-height:32px}@media(max-width:500px){.monitor-layout,.monitor-row{gap:7px}.monitor-row .tower-card{padding:9px 5px}.monitor-row .counts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.photo-directions{margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}.photo-directions h3{margin-bottom:5px}.photo-directions p{margin:0;font-size:14px;line-height:1.5}#enlarged-photo{max-height:calc(100dvh - 280px)}
 </style>
 </head>
 <body>
@@ -37,7 +38,7 @@ main,aside{min-width:0}@media(max-width:800px){.layout{grid-template-columns:min
 <footer><span id="storage-status">Progress saves in this browser.</span><div><button class="compact" id="reset">Start a new run</button><div id="reset-confirm" class="reset-confirm hide">Clear colors, light counts, and progress?<div class="actions"><button id="reset-yes" class="compact danger">Clear this run</button><button id="reset-no" class="compact">Cancel</button></div></div></div></footer>
 <section class="panel pad sources" aria-labelledby="sources-title"><h2 id="sources-title">Sources and acknowledgements</h2><ul><li><a href="https://github.com/JZee001/Area-51-Button-Solver" target="_blank" rel="noopener"><img class="credit-logo" src="assets/jzee001-logo.webp" width="36" height="36" alt="" loading="lazy"><span>JZee001’s Area 51 Button Solver</span></a></li><li><a href="https://www.youtube.com/watch?v=reCucbC2dSs" target="_blank" rel="noopener"><img class="credit-logo" src="assets/jackfrags-logo.webp" width="36" height="36" alt="" loading="lazy"><span>jackfrags’ video guide</span></a></li><li><a href="https://bfee.co/" target="_blank" rel="noopener"><img class="credit-logo" src="assets/bfee-logo.webp" width="36" height="36" alt="" loading="lazy"><span>Battlefield Easter Eggs Community (BFEE)</span></a></li></ul><p class="help">Map and tower screenshots supplied by sys-manny. Unofficial fan tool; game imagery belongs to its respective owners.</p></section>
 </div>
-<dialog id="photo-dialog" aria-labelledby="photo-dialog-title"><form method="dialog"><h2 id="photo-dialog-title">Tower photo</h2><button aria-label="Close enlarged photo" autofocus>Close</button></form><img id="enlarged-photo" alt=""></dialog>
+<dialog id="photo-dialog" aria-labelledby="photo-dialog-title" aria-describedby="photo-button-location"><form method="dialog"><h2 id="photo-dialog-title">Tower photo</h2><button aria-label="Close enlarged photo" autofocus>Close</button></form><img id="enlarged-photo" alt=""><div class="photo-directions"><h3>Find the button</h3><p id="photo-button-location"></p></div></dialog>
 <script>
 'use strict';
 const colorNames=['Red','Yellow','Green'];
@@ -103,7 +104,19 @@ function syncMapLayer(){const objectives=state.mapMode==='objectives';const src=
 $('map-objectives').onclick=()=>{state.mapMode='objectives';syncMapLayer();save()};
 $('map-terrain').onclick=()=>{state.mapMode='terrain';syncMapLayer();save()};
 function selectTower(i,fromMap=false){state.selected=i;renderTowers();renderMap();save();if(fromMap){const card=$('towers').children[i];card.scrollIntoView({behavior:'smooth',block:'nearest'});card.querySelector('.tower-title').focus({preventScroll:true})}}
-function openPhoto(i){$('photo-dialog-title').textContent='Tower '+(i+1);$('enlarged-photo').src='assets/tower'+String(i+1).padStart(2,'0')+'.webp';$('enlarged-photo').alt='Tower '+(i+1)+' button and nearby landmarks';$('photo-dialog').showModal()}
+// Panel landmarks visible in the supplied first-person screenshots; compass
+// faces are deliberately omitted until confirmed in game.
+const buttonLandmarks=[
+ 'Look low on the side of the large metal utility unit beside the tower. The panel is mounted on a short upright post.',
+ 'Look on the concrete boundary wall beneath the chain-link fence, beside a vertical wall joint. The panel is on a narrow upright post.',
+ 'At the concrete tower base, check near the corner behind the shrubs. The panel is attached to a vertical post against the wall.',
+ 'At the concrete tower base, look beside the wall corner among the branches. The panel sits low on the shaded concrete face.',
+ 'At the concrete tower base beside the orange rocks, look through the thin branches for the panel on its upright post.',
+ 'At the elevated tower, look against the low concrete base beneath the steel tower legs. Branches partly conceal the panel.',
+ 'At the concrete tower base, look beside the edge of the wall where the climbing branches cross it. The panel is low against the wall.',
+ 'At the concrete tower base, look on the wall beside the dense bush. The panel is mounted low on a thin upright post.'
+];
+function openPhoto(i){$('photo-dialog-title').textContent='Tower '+(i+1);$('photo-button-location').textContent=towerInfo[i][0]+' '+buttonLandmarks[i];$('enlarged-photo').src='assets/tower'+String(i+1).padStart(2,'0')+'.webp';$('enlarged-photo').alt='Tower '+(i+1)+' button and nearby landmarks';$('photo-dialog').showModal()}
 $('photo-dialog').onclick=e=>{const dialog=$('photo-dialog');if(e.target!==dialog)return;const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dialog.close()};
 function error(id,message){if(id==='color-result')renderSolutionMap();else renderFinalMap();$(id==='color-result'?'color-stage':'final-stage').hidden=false;const el=$(id);el.className='result error';el.textContent=message}
 function progressUI(el,plan,done,kind){
